@@ -19,6 +19,7 @@ class Store(BCInstr):
 
 
 class Add(BCInstr): pass
+class Sub(BCInstr): pass
 class Lt(BCInstr): pass
 class Gt(BCInstr): pass
 class Eq(BCInstr): pass

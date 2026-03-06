@@ -5,18 +5,27 @@ This project implements a from-scratch compiler pipeline for a Python-like langu
 The compiler includes:
 
 -   A hand-written lexer and recursive descent parser
--   Static semantic analysis
--   SSA-based intermediate representation
--   Control-flow handling (if, while)
+-   Static semantic analysis with type checking
+-   SSA-based intermediate representation with Phi nodes
+-   Control-flow handling (`if/else`, `while`)
 -   Multiple SSA optimization passes
 -   Bytecode lowering and a stack-based virtual machine
+-   A central compiler driver for pipeline orchestration
 
 This is an educational but production-style compiler project.
 
-## � Workflow and Command for the Project
-[🚀 Project Workflow & Run Instructions](docs/work.md)
+## 🚀 Quick Start
 
-## �📌 Compiler Pipeline Overview
+```bash
+git clone https://github.com/Tarunpathak001/MINI_LLVM.git
+cd MINI_LLVM
+python requirement.py
+python -m unittest discover -s tests
+```
+
+For full workflow and detailed run instructions, see [📋 Project Workflow & Run Instructions](docs/work.md).
+
+## 📌 Compiler Pipeline Overview
 
 ```
 Source Code
@@ -36,65 +45,142 @@ Bytecode Lowering
 Stack-Based Virtual Machine
 ```
 
-## 📂 Documentation by Phase
+## 💻 Usage Example
+
+```python
+from src.compiler_driver import CompilerDriver
+
+source = """
+x = 5
+y = 10
+if x < y:
+    print(x + y)
+else:
+    print(0)
+"""
+
+driver = CompilerDriver()
+driver.run(source)  # Output: 15
+```
+
+## 📂 Documentation
 
 Each compiler phase is documented independently for clarity and depth.
 
 ### Language & Frontend
 
-*   📘 [Language Specification](docs/language_spec.md)
-*   📘 [Lexer Design](docs/lexer.md)
-*   📘 [Parser & AST](docs/parser.md)
+| Phase | Document | Description |
+|:-----:|----------|-------------|
+| 0 | [Language Specification](docs/language_spec.md) | Types, operators, grammar, scoping rules, error model |
+| 1 | [Lexer Design](docs/lexer.md) | Tokenization, indentation handling, INDENT/DEDENT tokens |
+| 2 | [Parser & AST](docs/parser.md) | Recursive descent parsing, operator precedence, AST nodes |
 
-### Semantic Analysis
+### Analysis & IR
 
-*   📘 [Semantic Rules & Type Checking](docs/semantic_analysis.md)
+| Phase | Document | Description |
+|:-----:|----------|-------------|
+| 3 | [Semantic Analysis](docs/semantic_analysis.md) | Type checking, scope validation, branch merging rules |
+| 4 | [SSA IR Design](docs/ir_ssa.md) | SSA form, Phi nodes, control-flow lowering |
 
-### Intermediate Representation
+### Backend
 
-*   📘 [SSA IR Design](docs/ir_ssa.md)
+| Phase | Document | Description |
+|:-----:|----------|-------------|
+| 5-6 | [Bytecode & Virtual Machine](docs/bytecode_vm.md) | Bytecode ISA, SSA lowering, stack-based VM execution |
 
-### Code Generation
+### Project
 
-*   📘 [Bytecode & Virtual Machine](docs/bytecode_vm.md)
+| Document | Description |
+|----------|-------------|
+| [Workflow & Run Instructions](docs/work.md) | Setup, running tests, how each phase works end-to-end |
 
 ## ⚙️ Implemented Optimizations (SSA)
 
-The compiler includes several SSA-based optimization passes:
+The compiler includes seven SSA-based optimization passes:
 
-*   Constant Propagation
-*   Constant Folding
-*   Branch Simplification
-*   Dead Code Elimination
-*   Unreachable Block Elimination
-*   Phi Simplification
-*   Jump Threading
+| Pass | What It Does |
+|------|-------------|
+| Constant Propagation | Tracks constant values through SSA variables and Phi nodes |
+| Constant Folding | Pre-evaluates constant expressions (`1 + 2` → `3`) |
+| Branch Simplification | Converts `if True` / `if False` to unconditional `Jump` |
+| Dead Code Elimination | Worklist-based liveness analysis, removes unused instructions |
+| Unreachable Block Elimination | BFS reachability from entry, removes dead blocks, cleans Phi inputs |
+| Phi Simplification | Converts single-input Phi nodes to `Mov` |
+| Jump Threading | Shortcuts trivial forwarding blocks (`Label A → Jump B`) |
 
 Each optimization is implemented as a standalone pass and can be composed into a pipeline.
 
-## 🚧 Project Status
+## 📁 Project Structure
 
-**Status:** Initial Working Version (Frontend → SSA → VM complete)
-
-All core compiler stages are implemented and fully tested. The project is structured for future extensions.
-
-## 🔮 Planned Future Work
-
-*   Control-flow graph (CFG) visualization
-*   SSA register allocation
-*   Bytecode optimization
-*   Function definitions & calls
-*   Source-level debugging support
+```
+MINI_LLVM/
+├── src/                          # Core compiler
+│   ├── lexer.py                  # Tokenizer
+│   ├── ast_nodes.py              # AST node definitions
+│   ├── parser.py                 # Recursive descent parser
+│   ├── semantic.py               # Semantic analyzer
+│   ├── ir.py                     # IR instruction definitions
+│   ├── ir_builder.py             # AST → SSA IR converter
+│   ├── bytecode.py               # Bytecode instruction definitions
+│   ├── ssa_to_bytecode.py        # SSA IR → Bytecode lowering
+│   ├── bytecode_vm.py            # Stack-based VM
+│   └── compiler_driver.py        # Pipeline orchestrator
+│
+├── optimizations/                # SSA optimization passes
+│   ├── ssa_constprop.py
+│   ├── ssa_constfold.py
+│   ├── ssa_branch_simplify.py
+│   ├── ssa_dce.py
+│   ├── ssa_unreachable_elim.py
+│   ├── ssa_phi_simplify.py
+│   └── ssa_jump_thread.py
+│
+├── tests/                        # Unit tests (55 tests)
+├── docs/                         # Phase documentation
+├── README.md
+├── LICENSE.md
+└── SECURITY.md
+```
 
 ## 🧪 Testing
 
-All compiler stages are covered by unit tests located in the `tests/` directory.
+All compiler stages are covered by **55 unit tests** in the `tests/` directory.
+
+```bash
+# Run all tests
+python -m unittest discover -s tests
+
+# Run a specific phase
+python -m tests.test_lexer
+python -m tests.test_parser
+python -m tests.test_semantic
+python -m tests.test_ir
+python -m tests.test_bytecode
+python -m tests.test_cleanup    # Full pipeline integration
+```
+
+## 🚧 Project Status
+
+**Status:** Core Pipeline Complete (Frontend → SSA → Optimizations → VM)
+
+All compiler stages are implemented, optimized, and fully tested. The project is structured for future extensions.
+
+## 🔮 Planned Future Work
+
+-   Control-flow graph (CFG) visualization
+-   SSA register allocation
+-   Bytecode optimization
+-   Function definitions & calls
+-   Source-level debugging support
 
 ## 🏁 Why This Project Exists
 
 This project was built to:
 
-*   Understand SSA form and Phi nodes deeply
-*   Learn how control flow is lowered in compilers
-*   Practice writing optimization passes
-*   Bridge theory (compiler design) with real execution
+-   Understand SSA form and Phi nodes deeply
+-   Learn how control flow is lowered in compilers
+-   Practice writing real optimization passes
+-   Bridge theory (compiler design) with real execution
+
+
+Made in patnership with Adrak wali chai ☕...

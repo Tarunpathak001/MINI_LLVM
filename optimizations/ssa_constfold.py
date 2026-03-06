@@ -37,6 +37,8 @@ class SSAConstFold:
 
                     if instr.op == 'add':
                         val = a + b
+                    elif instr.op == 'sub':
+                        val = a - b
                     elif instr.op == 'lt':
                         val = a < b
                     elif instr.op == 'gt':

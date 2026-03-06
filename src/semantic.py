@@ -138,7 +138,13 @@ class SemanticAnalyzer:
                 return str
             raise TypeError(f"cannot apply '+' to {left_type.__name__} and {right_type.__name__}")
 
-        # 2. Comparison (<, >): int vs int, str vs str
+        # 2. Arithmetic (-): int-int only
+        if op == '-':
+            if left_type is int and right_type is int:
+                return int
+            raise TypeError(f"cannot apply '-' to {left_type.__name__} and {right_type.__name__}")
+
+        # 3. Comparison (<, >): int vs int, str vs str
         if op in ('<', '>'):
             if left_type is int and right_type is int:
                 return bool

@@ -4,7 +4,7 @@ from src.ir import (
     Label, Jump, Branch, Print, Mov
 )
 from src.bytecode import (
-    BCInstr, Push, Load, Store,
+    BCInstr, Push, Load, Store, Sub,
     Add, Lt, Gt, Eq, Ne, Neg,
     Label as BCLabel, Jump as BCJump, Branch as BCBranch, Print as BCPrint
 )
@@ -60,7 +60,7 @@ class SSAToBytecode:
                 bytecode.append(Load(right))
                 
                 ops = {
-                    'add': Add(),
+                    'add': Add(), 'sub': Sub(),
                     'lt': Lt(), 'gt': Gt(), 'eq': Eq(), 'ne': Ne()
                 }
                 op = ops.get(instr.op)

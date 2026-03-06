@@ -233,7 +233,7 @@ class IRBuilder:
         target = self.new_temp()
         
         OP_MAP = {
-            '+': 'add', 
+            '+': 'add', '-': 'sub',
             '<': 'lt', '>': 'gt', '==': 'eq', '!=': 'ne'
         }
         

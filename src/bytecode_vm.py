@@ -1,7 +1,7 @@
 from typing import List, Dict, Any
 from src.bytecode import (
     BCInstr, Push, Load, Store,
-    Add, Lt, Gt, Eq, Ne, Neg,
+    Add, Sub, Lt, Gt, Eq, Ne, Neg,
     Label, Jump, Branch, Print
 )
 
@@ -41,6 +41,11 @@ class VM:
             b = self.stack.pop()
             a = self.stack.pop()
             self.stack.append(a + b)
+            
+        elif isinstance(instr, Sub):
+            b = self.stack.pop()
+            a = self.stack.pop()
+            self.stack.append(a - b)
             
         elif isinstance(instr, Lt):
             b = self.stack.pop()

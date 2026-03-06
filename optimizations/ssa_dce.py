@@ -6,64 +6,74 @@ from src.ir import (
 
 class SSADCE:
     def run(self, ir: IRProgram) -> IRProgram:
-        used = set()
-        new_instrs = []
+        instructions = ir.instructions
 
-        # Traverse backwards
-        for instr in reversed(ir.instructions):
-
-            # ---------- Side-effect instructions (ALWAYS keep) ----------
-            if isinstance(instr, (Print, Branch, Jump, Label)):
-                self._mark_used(instr, used)
-                new_instrs.append(instr)
-                continue
-
-            # ---------- Instructions with a target ----------
+        # Phase 1: Build def map (target -> instruction index)
+        def_map = {}  # ssa_name -> index of instruction that defines it
+        for idx, instr in enumerate(instructions):
             target = getattr(instr, 'target', None)
-
             if target is not None:
-                if target in used:
-                    # Instruction is live
-                    self._mark_used(instr, used)
-                    new_instrs.append(instr)
-                else:
-                    # DEAD → skip
-                    continue
-            else:
-                # Defensive fallback (should not happen if all instrs covered)
-                self._mark_used(instr, used)
-                new_instrs.append(instr)
+                def_map[target] = idx
 
-        new_instrs.reverse()
+        # Phase 2: Seed worklist from side-effect instructions (roots)
+        live = set()      # set of instruction indices that are live
+        worklist = []     # indices to process
+
+        for idx, instr in enumerate(instructions):
+            if isinstance(instr, (Print, Branch, Jump, Label)):
+                if idx not in live:
+                    live.add(idx)
+                    worklist.append(idx)
+
+        # Phase 3: Transitively mark dependencies as live
+        while worklist:
+            idx = worklist.pop()
+            instr = instructions[idx]
+
+            # Get all SSA names used by this instruction
+            used_names = self._get_used(instr)
+
+            for name in used_names:
+                if name in def_map:
+                    def_idx = def_map[name]
+                    if def_idx not in live:
+                        live.add(def_idx)
+                        worklist.append(def_idx)
+
+        # Phase 4: Filter to live instructions only (preserve order)
+        new_instrs = [instr for idx, instr in enumerate(instructions) if idx in live]
         return IRProgram(new_instrs)
 
-    def _mark_used(self, instr, used):
-        """
-        Add all SSA operands used by instr into `used`
-        """
+    def _get_used(self, instr):
+        """Return set of SSA names used (read) by an instruction."""
+        names = set()
+
         if isinstance(instr, BinaryOp):
             if isinstance(instr.left, str):
-                used.add(instr.left)
+                names.add(instr.left)
             if isinstance(instr.right, str):
-                used.add(instr.right)
+                names.add(instr.right)
 
         elif isinstance(instr, UnaryOp):
             if isinstance(instr.operand, str):
-                used.add(instr.operand)
+                names.add(instr.operand)
 
         elif isinstance(instr, Mov):
             if isinstance(instr.source, str):
-                used.add(instr.source)
+                names.add(instr.source)
 
         elif isinstance(instr, Phi):
             for val, _ in instr.inputs:
                 if isinstance(val, str):
-                    used.add(val)
+                    names.add(val)
 
         elif isinstance(instr, Print):
             if isinstance(instr.value, str):
-                used.add(instr.value)
+                names.add(instr.value)
 
         elif isinstance(instr, Branch):
             if isinstance(instr.condition, str):
-                used.add(instr.condition)
+                names.add(instr.condition)
+
+        return names
+

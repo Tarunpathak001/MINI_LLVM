@@ -126,7 +126,7 @@ class Parser:
     def parse_addition(self):
         node = self.parse_unary()
 
-        while self.current().type == TokenType.PLUS:
+        while self.current().type in (TokenType.PLUS, TokenType.MINUS):
             op = self.current().value
             self.advance()
             right = self.parse_unary()
