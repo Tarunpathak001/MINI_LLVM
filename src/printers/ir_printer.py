@@ -29,4 +29,4 @@ class IRPrinter:
                 f"[ %{value}, %{label} ]" for value, label in instr.inputs
             )
             return f"  %{instr.target} = phi {inputs}"
-        raise TypeError(f"Unsupported IR instruction: {type(instr).__name__}")
+        return f"  ; UNKNOWN_INSTR({type(instr).__name__})"

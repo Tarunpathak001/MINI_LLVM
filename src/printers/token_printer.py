@@ -1,8 +1,11 @@
+_VALUELESS = frozenset({"NEWLINE", "INDENT", "DEDENT", "EOF"})
+
+
 class TokenPrinter:
     """Render lexer tokens in a compact human-readable form."""
 
     def format_token(self, token):
-        if token.value is None:
+        if token.type in _VALUELESS or token.value is None:
             return token.type
         return f"{token.type}({repr(token.value)})"
 
