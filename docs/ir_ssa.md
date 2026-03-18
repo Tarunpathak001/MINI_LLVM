@@ -1,6 +1,4 @@
-⚠️ Internal design notes. Not intended as user documentation.
-
-# Mini-Python SSA IR (Phase 6.3)
+# SSA Intermediate Representation | Mini-LLVM
 
 Top-level documentation for the Intermediate Representation.
 

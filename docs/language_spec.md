@@ -1,9 +1,7 @@
-⚠️ Internal design notes. Not intended as user documentation.
-
-# Mini-Python Language Specification
+# Language Specification | Mini-LLVM
 
 **Version:** 1.0  
-**Status:** Phase 0 (Specification ONLY)
+**Status:** Completed
 
 Mini-Python is a minimal, Python-like language designed for compiler construction. It is dynamically typed at runtime but statically checked for obvious semantic errors. It explicitly removes Python conveniences such as truthiness and boolean operators to simplify specific compilation phases.
 

@@ -1,6 +1,4 @@
-⚠️ Internal design notes. Not intended as user documentation.
-
-# Mini-Python Lexer (Phase 1)
+# Lexical Analysis (Lexer) | Mini-LLVM
 
 **Status:** Completed & Audited  
 **Source File:** `lexer.py`

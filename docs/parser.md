@@ -1,6 +1,4 @@
-⚠️ Internal design notes. Not intended as user documentation.
-
-# Mini-Python Parser (Phase 2)
+# Parser & AST | Mini-LLVM
 
 **Status:** Completed  
 **Source File:** `parser.py`  

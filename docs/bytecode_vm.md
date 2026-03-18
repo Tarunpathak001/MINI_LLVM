@@ -1,6 +1,4 @@
-⚠️ Internal design notes. Not intended as user documentation.
-
-# Mini-Python Bytecode & VM (Phase 5)
+# Bytecode & Virtual Machine | Mini-LLVM
 
 **Status:** Completed  
 **Lowering:** `ssa_to_bytecode.py`  

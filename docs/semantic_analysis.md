@@ -1,8 +1,4 @@
-⚠️ Internal design notes. Not intended as user documentation.
-
-# Mini-Python Semantic Analysis (Phase 6.2)
-
-**Phase 3 (Core) + Phase 6 (Loops)**
+# Semantic Analysis | Mini-LLVM
 
 The semantic analyzer ensures static correctness before code generation. It tracks variable definitions and types across control flow.
 
