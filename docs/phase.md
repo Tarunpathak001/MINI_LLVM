@@ -89,6 +89,29 @@
 
 ---
 
+## Phase 2.5 — Pretty Printers
+
+**Status:** ✅ Complete  
+**Files:** `src/printers/token_printer.py`, `src/printers/ast_printer.py`, `src/printers/ir_printer.py`  
+**Verification file:** `verify_printers.py`
+
+### Work Done
+- Added a token pretty printer that renders tokens as `TYPE(value)` or `TYPE`.
+- Added an AST pretty printer that renders the full tree with indentation.
+- Added an SSA IR pretty printer with readable LLVM-style formatting.
+- Kept the implementation additive without changing core compiler logic.
+
+### How It's Verified
+| Check | What It Verifies |
+|-------|-------------------|
+| `python verify_printers.py` | Produces `=== TOKENS ===`, `=== AST ===`, and `=== IR ===` sections |
+| Token formatting | Valueless tokens render as `NEWLINE`, `INDENT`, `DEDENT`, `EOF` |
+| AST formatting | Nested nodes render with indentation and preserve structure |
+| IR formatting | `Const`, `Mov`, `BinaryOp`, `UnaryOp`, `Print`, `Branch`, `Jump`, `Phi`, and `Label` render readably |
+| Full regression suite | `python -m unittest discover -s tests` still reports `Ran 55 tests ... OK` |
+
+---
+
 ## Phase 3 — Semantic Analysis
 
 **Status:** ✅ Complete  
@@ -299,6 +322,9 @@ python -m tests.test_lexer
 # Phase 2: Parser
 python -m tests.test_parser
 python -m tests.test_parser_while
+
+# Phase 2.5: Pretty Printers
+python verify_printers.py
 
 # Phase 3: Semantics
 python -m tests.test_semantic

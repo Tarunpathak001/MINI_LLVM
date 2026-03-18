@@ -46,6 +46,17 @@ python -m tests.test_semantic         # Verifies semantic analysis and scope che
 python -m tests.test_unreachable      # Tests removal of unreachable code blocks
 ```
 
+### Running the Pretty Printer Verification
+To inspect the human-readable compiler views added in Phase 2:
+```bash
+python verify_printers.py
+```
+
+This prints:
+- `=== TOKENS ===`
+- `=== AST ===`
+- `=== IR ===`
+
 
 ### Running the Compiler (Example Usage)
 Currently, the compiler is driver-driven via tests. To see the compiler in action on custom code, you can inspect `tests/test_cleanup.py` which runs the full pipeline.
@@ -71,6 +82,14 @@ Currently, the compiler is driver-driven via tests. To see the compiler in actio
 -   Constructs nodes like `IfStmt`, `WhileStmt`, `BinOp`, `Assignment`.
 -   Enforces operator precedence (e.g., `*` before `+`).
 -   Output: Hierarchical `AST`.
+
+### Step 2.5: Pretty Printing
+**Work**: Optional helpers render compiler structures in a human-readable form for debugging and inspection.
+**Gist**:
+-   `TokenPrinter` formats tokens compactly.
+-   `ASTPrinter` renders the parsed tree with indentation.
+-   `IRPrinter` renders SSA instructions in readable textual form.
+-   Used by `verify_printers.py` and later user-facing tooling.
 
 ### Step 3: Semantic Analysis
 **Work**: Validates the meaning of the code before compilation, checking for logical errors that syntax ignores.
