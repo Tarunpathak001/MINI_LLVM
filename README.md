@@ -7,6 +7,7 @@ The compiler includes:
 -   A hand-written lexer and recursive descent parser
 -   Static semantic analysis with type checking
 -   SSA-based intermediate representation with Phi nodes
+-   Pretty printers for tokens, AST, and SSA IR
 -   Control-flow handling (`if/else`, `while`)
 -   Multiple SSA optimization passes
 -   Bytecode lowering and a stack-based virtual machine
@@ -62,6 +63,26 @@ else:
 driver = CompilerDriver()
 driver.run(source)  # Output: 15
 ```
+
+## Pretty Printers
+
+Phase 2 adds human-readable printers for:
+
+-   Tokens
+-   AST
+-   SSA IR
+
+Run the printer verification script with:
+
+```bash
+python verify_printers.py
+```
+
+Expected output sections:
+
+-   `=== TOKENS ===`
+-   `=== AST ===`
+-   `=== IR ===`
 
 ## 📂 Documentation
 
@@ -158,6 +179,26 @@ python -m tests.test_ir
 python -m tests.test_bytecode
 python -m tests.test_cleanup    # Full pipeline integration
 ```
+
+## Phase 2 Completion Checklist
+
+Use these commands to confirm the pretty printer phase is complete:
+
+```bash
+python verify_printers.py
+python -m unittest discover -s tests
+git log --oneline -2
+git status --short
+```
+
+Expected confirmation signals:
+
+-   `python verify_printers.py` shows `=== TOKENS ===`, `=== AST ===`, and `=== IR ===`
+-   `python -m unittest discover -s tests` reports `Ran 55 tests` and `OK`
+-   `git log --oneline -2` includes:
+    `83b5686 refactor: harden pretty printer edge cases`
+    `400e991 feat: add token, AST, and SSA IR pretty printers`
+-   `git status --short` prints nothing
 
 ## 🚧 Project Status
 
