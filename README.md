@@ -26,6 +26,7 @@ This is an educational but production-style compiler project. It serves as a com
 git clone https://github.com/Tarunpathak001/MINI_LLVM.git
 cd MINI_LLVM
 python requirement.py
+python -m pip install -e .
 python -m unittest discover -s tests
 ```
 
@@ -67,6 +68,30 @@ else:
 
 driver = CompilerDriver()
 driver.run(source)  # Output: 15
+```
+
+## CLI Usage
+
+Install the project in editable mode to expose the `mini-llvm` command:
+
+```bash
+python -m pip install -e .
+```
+
+Then run:
+
+```bash
+mini-llvm tokens example.mpy
+mini-llvm ast example.mpy
+mini-llvm ir example.mpy
+mini-llvm run example.mpy
+mini-llvm pipeline example.mpy
+```
+
+If you do not want to install the package yet, use:
+
+```bash
+python -m src.cli run example.mpy
 ```
 
 ## 🖨️ Pretty Printers

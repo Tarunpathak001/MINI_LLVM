@@ -314,6 +314,15 @@ python -m unittest discover -s tests
 ```
 **Expected output:** `Ran 55 tests ... OK`
 
+### Install and Verify the CLI
+```bash
+python -m pip install -e .
+mini-llvm run example.mpy
+mini-llvm ast example.mpy
+mini-llvm pipeline example.mpy
+```
+**Expected behavior:** the `mini-llvm` command is available after installation and runs the requested compiler stage.
+
 ### Run Individual Phase Tests
 ```bash
 # Phase 1: Lexer

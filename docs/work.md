@@ -20,6 +20,12 @@ Run the setup script to install dependencies (if any) and prepare the environmen
 python requirement.py
 ```
 
+### 3. Install the CLI Entry Point
+Install the project in editable mode so the `mini-llvm` command is available:
+```bash
+python -m pip install -e .
+```
+
 ## 🏃 How to Run
 This project is structured as a Python package. You must run commands from the project root directory.
 
@@ -56,6 +62,21 @@ This prints:
 - `=== TOKENS ===`
 - `=== AST ===`
 - `=== IR ===`
+
+### Running the CLI
+After `python -m pip install -e .`, the CLI is available as:
+```bash
+mini-llvm tokens example.mpy
+mini-llvm ast example.mpy
+mini-llvm ir example.mpy
+mini-llvm run example.mpy
+mini-llvm pipeline example.mpy
+```
+
+If the package is not installed yet, use:
+```bash
+python -m src.cli run example.mpy
+```
 
 
 ### Running the Compiler (Example Usage)
