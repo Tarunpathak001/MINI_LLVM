@@ -1,0 +1,7 @@
+x = 10
+y = 20
+z = x + y
+if 1 < 2:
+    print(z)
+else:
+    print(0)

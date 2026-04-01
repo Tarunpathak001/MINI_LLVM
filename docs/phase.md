@@ -320,6 +320,7 @@ python -m pip install -e .
 mini-llvm run example.mpy
 mini-llvm ast example.mpy
 mini-llvm pipeline example.mpy
+mini-llvm run examples/loop.mpy
 ```
 **Expected behavior:** the `mini-llvm` command is available after installation and runs the requested compiler stage.
 

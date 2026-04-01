@@ -1,11 +1,16 @@
 # test_cleanup.py
 import unittest
 import sys, os
+import io
+from contextlib import redirect_stdout
 
 
 from src.lexer import Lexer
 from src.parser import Parser
+from src.semantic import SemanticAnalyzer
 from src.ir_builder import IRBuilder
+from src.ssa_to_bytecode import SSAToBytecode
+from src.bytecode_vm import VM
 from optimizations.ssa_constprop import SSAConstProp
 from optimizations.ssa_constfold import SSAConstFold
 from optimizations.ssa_branch_simplify import SSABranchSimplify
@@ -31,6 +36,27 @@ class TestCleanup(unittest.TestCase):
         ir = SSAJumpThread().run(ir)
 
         return ir
+
+    def run_optimized(self, src):
+        tokens = Lexer(src).tokenize()
+        ast = Parser(tokens).parse()
+        SemanticAnalyzer().visit(ast)
+        ir = IRBuilder().generate(ast)
+
+        ir = SSAConstProp().run(ir)
+        ir = SSAConstFold().run(ir)
+        ir = SSABranchSimplify().run(ir)
+        ir = SSADCE().run(ir)
+        ir = SSAUnreachableElim().run(ir)
+        ir = SSAPhiSimplify().run(ir)
+        ir = SSAJumpThread().run(ir)
+
+        bc = SSAToBytecode().convert(ir)
+        vm = VM(bc)
+        out = io.StringIO()
+        with redirect_stdout(out):
+            vm.run()
+        return out.getvalue().strip()
 
     def test_phi_simplify(self):
         """
@@ -69,52 +95,23 @@ print(x)
 
     def test_jump_thread(self):
         """
-        Jump to trivial block rewriting.
-        src structure that creates:
-        Label A
-        Jump B
-        
-        BranchSimplify creates:
-        if True: ...
-        
-        becomes:
-        Jump L_then
-        L_then: ...
-        Jump L_merge
-        L_else: ... Jump L_merge (removed)
-        L_merge: ...
-        
-        Maybe standard 'if' doesn't create trivial blocks easily without nested?
-        Let's try nested if True.
+        Jump threading must not break Phi predecessor labels when a trivial
+        forwarding block jumps into a loop header that begins with Phi nodes.
         """
         src = """
-if True:
-    if True:
-        x = 1
+x = 2
+y = 1
+if x > 0:
+    while y < 3:
+        if y < 2:
+            print("inner")
+        else:
+            print("edge")
+        y = y + 1
+else:
+    print("skip")
 """
-        # Outer if True -> Jump L_then_outer
-        # L_then_outer:
-        #   Inner if True -> Jump L_then_inner
-        #   L_then_inner: x=1... Jump L_merge_inner
-        #   L_merge_inner: Jump L_merge_outer
-        
-        # L_merge_inner is likely: "L_merge_inner: Jump L_merge_outer" because inner had no statements after x=1?
-        # Let's check.
-        # Actually `visit_If`:
-        # ... branches ...
-        # emit L_merge
-        # If nothing follows, L_merge is last.
-        # But if nested, the outer block continues? No.
-        
-        ir = self.full_optimize(src)
-        
-        # We expect some Jumps to be optimized.
-        # It's hard to verify exact jump targets without analyzing the graph structure.
-        # But we can check that we don't have chains?
-        # Actually, let's just enable the pass and ensure IR is valid/runs.
-        # We can verify `jump_map` logic by unit testing the class directly if needed,
-        # but end-to-end ensure it doesn't crash is good for integration.
-        pass
+        self.assertEqual(self.run_optimized(src).splitlines(), ["inner", "edge"])
 
 if __name__ == "__main__":
     unittest.main()

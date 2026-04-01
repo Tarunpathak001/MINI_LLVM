@@ -1,4 +1,4 @@
-from src.ir import IRProgram, Jump, Label
+from src.ir import IRProgram, Jump, Label, Phi
 
 class SSAJumpThread:
     def run(self, ir: IRProgram) -> IRProgram:
@@ -8,6 +8,15 @@ class SSAJumpThread:
         jump_map = {}
 
         instrs = ir.instructions
+        phi_labels = set()
+
+        # A block that starts with Phi nodes cannot safely be jump-threaded into
+        # without also rewriting predecessor labels on those Phi inputs.
+        for i in range(len(instrs) - 1):
+            curr = instrs[i]
+            next_instr = instrs[i + 1]
+            if isinstance(curr, Label) and isinstance(next_instr, Phi):
+                phi_labels.add(curr.name)
         
         # Pass 1: Identify trivial blocks (Label -> Jump pattern)
         for i in range(len(instrs) - 1):
@@ -16,7 +25,7 @@ class SSAJumpThread:
             
             if isinstance(curr, Label) and isinstance(next_instr, Jump):
                 # Guard against self-loop A -> A
-                if curr.name != next_instr.target_label:
+                if curr.name != next_instr.target_label and next_instr.target_label not in phi_labels:
                     jump_map[curr.name] = next_instr.target_label
         
         # Pass 2: Rewrite Jumps

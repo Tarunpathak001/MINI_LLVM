@@ -78,6 +78,16 @@ If the package is not installed yet, use:
 python -m src.cli run example.mpy
 ```
 
+### Running the Example Programs
+The repository includes an `examples/` folder for quick end-to-end runs:
+```bash
+mini-llvm run examples/hello.mpy
+mini-llvm run examples/if_else.mpy
+mini-llvm run examples/loop.mpy
+mini-llvm run examples/nested.mpy
+mini-llvm pipeline examples/optimization_demo.mpy
+```
+
 
 ### Running the Compiler (Example Usage)
 Currently, the compiler is driver-driven via tests. To see the compiler in action on custom code, you can inspect `tests/test_cleanup.py` which runs the full pipeline.

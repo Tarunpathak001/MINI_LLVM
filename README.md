@@ -94,6 +94,23 @@ If you do not want to install the package yet, use:
 python -m src.cli run example.mpy
 ```
 
+## Examples
+
+The `examples/` folder contains ready-to-run programs for the current language features:
+
+-   `examples/hello.mpy`
+-   `examples/if_else.mpy`
+-   `examples/loop.mpy`
+-   `examples/nested.mpy`
+-   `examples/optimization_demo.mpy`
+
+Useful commands:
+
+```bash
+mini-llvm run examples/loop.mpy
+mini-llvm pipeline examples/optimization_demo.mpy
+```
+
 ## 🖨️ Pretty Printers
 
 This project includes human-readable printers for:
